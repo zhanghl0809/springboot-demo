@@ -49,12 +49,13 @@ public class UserSignServiceImpl implements UserSignService {
         try {
             //尝试加锁，最多等待2秒，上锁以后3秒自动解锁
             boolean tryLock = lock.tryLock(2, 3, TimeUnit.SECONDS);
-            if (tryLock) {
-                throw new BizException(USER_SIGN_ERROR);
+            if (!tryLock) {
+                throw new BizException(USER_SIGN_ERROR, "没有获取到锁");
             }
             String key = this.getKey(user);
             return redisTemplate.opsForValue().setBit(key, day - 1, true);
         } catch (Exception e) {
+            log.error(USER_SIGN_ERROR.getMsg(),e);
             throw new BizException(USER_SIGN_ERROR);
         } finally {
             //解锁
