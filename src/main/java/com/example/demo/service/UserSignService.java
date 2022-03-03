@@ -17,7 +17,7 @@ public interface UserSignService {
      * 查询某一天是否签到
      * @param user u
      * @param day day
-     * @return boolean
+     * @return int
      */
     Integer getOneDayIsSign(TbUser user, int day);
 
@@ -31,21 +31,21 @@ public interface UserSignService {
     /**
      * 查询当前月份连续签到总次数
      * @param user user
-     * @return boolean
+     * @return int
      */
     Integer getMonthContinuousSignDays(TbUser user);
 
     /**
      * 查询当前月份签到日历
      * @param user
-     * @return boolean
+     * @return map
      */
     TreeMap<String,Long> currentMonthSign(TbUser user);
 
     /**
      * 查询当前月份签到日历
      * @param user
-     * @return boolean
+     * @return map
      */
     TreeMap<String,Integer> currentMonthSignOtherWay(TbUser user);
 
