@@ -1,0 +1,50 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: demo-client # 给client应用取个名字
+  boot:
+    admin:
+      client:
+        url: http://localhost:9001   #这里配置admin server 的地址
+        username: admin
+        password: 123
+
+  datasource:
+    username: root
+    password: root123456
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    redisson:
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.example.demo.domin
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        demo:
+          mapper : debug
+#日志输出
+  config: classpath:logback-dev.xml
+  path: log
+
+
+#开放端点用于SpringBoot Admin的监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
