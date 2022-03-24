@@ -17,8 +17,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/api")
@@ -31,6 +34,7 @@ public class TestController {
     @Autowired
     private RedissonClient redissonClient;
 
+    @UseToken
     @PassToken
     @GetMapping("/1")
     public ApiResult<Object> getAllUser(@RequestParam("id") String id) throws Exception {
@@ -84,6 +88,12 @@ public class TestController {
 
 // 签到系统、秒杀系统
 //id生成、过滤器、token秘钥验证、aop拦截器、自定义注解\、mq、redis、代码生成、nacos、XXL-JOb
+
+    public static void main(String[] args) {
+        TbUser user = new TbUser();
+        boolean aNull = Objects.isNull(user);
+        System.out.println(aNull);
+    }
 }
 /**
  *
@@ -94,3 +104,5 @@ public class TestController {
  * 使用场景二：统计活跃用户
  * 使用场景三：用户在线状态
  */
+
+

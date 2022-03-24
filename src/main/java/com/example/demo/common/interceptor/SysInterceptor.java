@@ -5,11 +5,14 @@ import com.example.demo.common.annotations.UseToken;
 import com.example.demo.common.annotations.PassToken;
 import com.example.demo.common.enums.ResultEnum;
 import com.example.demo.common.enums.TokenEnum;
+import com.example.demo.common.exception.IpException;
 import com.example.demo.common.exception.SysException;
 import com.example.demo.common.exception.TokenException;
 import com.example.demo.domin.TbUser;
+import com.example.demo.request.dto.UserAddDto;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.IPUtils;
+import com.example.demo.utils.RedisUtil;
 import com.example.demo.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -22,22 +25,24 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class SysInterceptor implements HandlerInterceptor {
 
-    private final static String BLACK_IP = "10.46.134.114";
     private final static String ACCESS_TOKEN = "access_token";
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("In SysInterceptor...");
-        this.ipCheck(request);
+//        this.ipCheck(request);
         return this.tokenCheck(request, response, handler);
     }
 
@@ -53,9 +58,25 @@ public class SysInterceptor implements HandlerInterceptor {
 
     private void ipCheck(HttpServletRequest request) {
         // ip拦截
+        String blackIpKey = "black_list:ip";
         String ip = IPUtils.getRealIP(request);
-        if (StringUtils.equals(ip, BLACK_IP)) {
-            throw new SysException(ResultEnum.IP_LIMIT, "请勿恶意请求");
+        String ipList = redisUtil.get(blackIpKey).toString();
+        List<String> blackIpList = Arrays.asList(ipList.split(","));
+
+        if (blackIpList.contains(ip)) {
+            throw new IpException(ResultEnum.IP_LIMIT, "黑名单，请勿恶意请求");
+        } else {
+            String key = "limit_control:ip" + ip;
+            Long incr = redisUtil.setIncr(key);
+            if (incr >= 5L) {
+                redisUtil.deleteKey(blackIpKey);
+
+                List<String> newIpList = new ArrayList<>(blackIpList);
+                newIpList.add(ip);
+                String blackIpListStr = String.join(",", newIpList);
+                redisUtil.set(blackIpKey, blackIpListStr);
+                throw new IpException(ResultEnum.IP_LIMIT, "ip限制请勿恶意请求");
+            }
         }
     }
 
@@ -105,6 +126,14 @@ public class SysInterceptor implements HandlerInterceptor {
         }
         return true;
     }
+
+    public static void main(String[] args) {
+        boolean a =  true;
+        boolean b =  false;
+//        !(auditTypeBl && shopPropertyBl)
+        System.out.println(!(a&&b));
+    }
+
 }
 
 

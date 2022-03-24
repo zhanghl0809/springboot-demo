@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +46,11 @@ public class IPUtils {
             log.info("X-Real-IP ip: " + ip);
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
+            ip = request.getRemoteAddr().trim();
+            String localIp = "0:0:0:0:0:0:0:1";
+            if (StringUtils.equals(localIp, ip)) {
+                ip = "127.0.0.1";
+            }
             log.info("getRemoteAddr ip: " + ip);
         }
         return ip;

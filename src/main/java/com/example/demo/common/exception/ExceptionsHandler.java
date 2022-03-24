@@ -29,6 +29,7 @@ public class ExceptionsHandler {
         return ApiResult.EXCEPTION(ResultEnum.EXCEPTION.getCode(), ResultEnum.EXCEPTION.getMessage());
     }
 
+
     /**
      * 统一未知错误处理
      * @param e
@@ -63,4 +64,10 @@ public class ExceptionsHandler {
         return ApiResult.EXCEPTION(e.getCode(),e.getMessage());
     }
 
+    @ExceptionHandler(IpException.class)
+    public ApiResult<Object> IpExceptionHandler(IpException e) {
+        log.error("IpExceptionHandler-未知异常", e);
+        return ApiResult.EXCEPTION(e.getCode(),e.getMessage());
+
+    }
 }
