@@ -9,6 +9,7 @@ import com.example.demo.domin.TbUser;
 import com.example.demo.request.dto.LoginDto;
 import com.example.demo.request.dto.UserAddDto;
 import com.example.demo.service.UserService;
+import com.example.demo.service.design.strategy.TestStrategyFactory;
 import com.example.demo.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
@@ -33,6 +34,8 @@ public class TestController {
     private RedisUtil redisUtil;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private TestStrategyFactory factory;
 
     @UseToken
     @PassToken
@@ -49,6 +52,12 @@ public class TestController {
     public ApiResult<Object> postGet(@RequestBody LoginDto loginDto) {
         List<TbUser> users = userService.selectAllUser();
         return ApiResult.SUCCESS(users);
+    }
+
+    @GetMapping("/3")
+    public ApiResult<Object> testStrategy(@RequestParam("id") int id) throws Exception {
+        String s = factory.getHandler(id).doSomeThing(11111);
+        return ApiResult.SUCCESS(s);
     }
 
 
