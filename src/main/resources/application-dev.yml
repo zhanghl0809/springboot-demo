@@ -64,3 +64,10 @@ xxl:
       logpath: 有读写权限的路径
       logretentiondays: 30
     accessToken:
+
+# my config
+developer:
+  name: zhanghl
+  website: https://www.baidu.com
+  qq: 610089***
+  phone-number: 111111111111
